@@ -273,7 +273,7 @@ function RouteTable(props) {
   const dense = true;
   const theme = createMuiTheme();
 
-  const { routeStats } = props;
+  const { routeStats, setHoverRoute } = props;
 
   function handleRequestSort(event, property) {
     const isDesc = orderBy === property && order === 'desc';
@@ -309,7 +309,12 @@ function RouteTable(props) {
               onRequestSort={handleRequestSort}
               rowCount={displayedRouteStats.length}
             />
-            <TableBody>
+            <TableBody 
+              onMouseLeave={() => {
+                clearTimeout(global.hoverRoute);
+                setHoverRoute(null);
+              }}
+            >
               {stableSort(
                 displayedRouteStats,
                 order,
@@ -318,7 +323,15 @@ function RouteTable(props) {
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.route.id}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.route.id} 
+                    onMouseEnter={() => {
+                      clearTimeout(global.hoverRoute);
+                      global.hoverRoute = setTimeout(
+                        () => setHoverRoute(row.route), 
+                        30,
+                      );
+                    }} 
+                  >
                     <TableCell
                       component="th"
                       id={labelId}
